@@ -1,0 +1,1880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Three Months of Us</title>
+<meta name="description" content="90 days, countless memories, one beautiful story.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,500&family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ============================================================
+   "THREE MONTHS OF US" — luxury cinematic anniversary site
+   Single-file, dependency-free HTML/CSS/JS. No framework.
+   All personal content lives in the CONFIG object at the top
+   of the <script> at the bottom of this file — edit only that.
+   ============================================================ */
+
+:root{
+  /* ---- palette ---- */
+  --bg-primary:      #08050A;
+  --bg-secondary:    #260B18;
+  --accent-deep:     #5C1835;
+  --rose:            #D96C8A;
+  --soft-pink:       #F4B6C8;
+  --gold:            #D9B978;
+  --warm-white:      #FFF7F2;
+
+  --ink-muted:       rgba(255,247,242,0.62);
+  --ink-faint:       rgba(255,247,242,0.38);
+  --hairline:        rgba(217,185,120,0.22);
+  --glass-fill:      rgba(255,247,242,0.045);
+  --glass-border:    rgba(217,185,120,0.18);
+
+  /* ---- type ---- */
+  --font-display: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  --font-script:  'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* ---- rhythm ---- */
+  --section-pad: clamp(88px, 14vw, 168px);
+  --edge-pad: clamp(24px, 6vw, 96px);
+  --ease-cinema: cubic-bezier(.16,.84,.32,1);
+}
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+html,body{ background:var(--bg-primary); }
+
+body{
+  margin:0;
+  color:var(--warm-white);
+  font-family:var(--font-body);
+  font-weight:400;
+  overflow-x:hidden;
+  position:relative;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* base cinematic gradient wash across the whole page */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -10%, rgba(92,24,53,0.55), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 100% 15%, rgba(38,11,24,0.7), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 0% 70%, rgba(38,11,24,0.65), transparent 55%),
+    linear-gradient(180deg, #08050A 0%, #0c0710 35%, #150a14 60%, #08050A 100%);
+}
+
+/* subtle film grain overlay */
+.grain{
+  position:fixed;
+  inset:-40px;
+  z-index:9000;
+  pointer-events:none;
+  opacity:0.05;
+  mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+::selection{ background:var(--accent-deep); color:var(--warm-white); }
+
+a{ color:inherit; }
+
+img{ max-width:100%; display:block; }
+
+button{ font-family:inherit; }
+
+/* ---- focus states (accessibility) ---- */
+:focus-visible{
+  outline:1.5px solid var(--gold);
+  outline-offset:4px;
+  border-radius:2px;
+}
+
+/* ---- utility: eyebrow label ---- */
+.eyebrow{
+  font-family:var(--font-body);
+  font-size:11px;
+  letter-spacing:0.32em;
+  text-transform:uppercase;
+  color:var(--gold);
+  font-weight:500;
+  display:inline-block;
+}
+
+.section-heading{
+  font-family:var(--font-display);
+  font-weight:500;
+  font-size:clamp(30px, 4.6vw, 54px);
+  line-height:1.12;
+  letter-spacing:0.2px;
+  color:var(--warm-white);
+  margin:14px 0 0;
+}
+
+.section-sub{
+  font-size:15.5px;
+  line-height:1.75;
+  color:var(--ink-muted);
+  max-width:520px;
+  margin:18px auto 0;
+  font-weight:300;
+}
+
+.hr-flourish{
+  width:44px;
+  height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin:20px auto 0;
+  opacity:0.75;
+}
+
+section{ position:relative; padding:var(--section-pad) var(--edge-pad); }
+
+/* ============================================================
+   SCROLL-REVEAL (generic)
+   ============================================================ */
+[data-reveal]{
+  opacity:0;
+  transform:translateY(26px);
+  transition:opacity 1.05s var(--ease-cinema), transform 1.05s var(--ease-cinema);
+  will-change:opacity, transform;
+}
+[data-reveal].in-view{ opacity:1; transform:translateY(0); }
+[data-reveal="scale"]{ transform:scale(0.94) translateY(20px); }
+[data-reveal="scale"].in-view{ transform:scale(1) translateY(0); }
+
+/* ============================================================
+   CURSOR GLOW (desktop only)
+   ============================================================ */
+.cursor-glow{
+  position:fixed;
+  top:0; left:0;
+  width:420px; height:420px;
+  margin:-210px 0 0 -210px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(217,108,138,0.10), rgba(217,108,138,0) 70%);
+  pointer-events:none;
+  z-index:5;
+  opacity:0;
+  transition:opacity .4s ease;
+  will-change:transform;
+}
+.cursor-glow.active{ opacity:1; }
+@media (pointer: coarse){ .cursor-glow{ display:none; } }
+
+/* ============================================================
+   FLOATING PARTICLES
+   ============================================================ */
+.particle-field{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:1;
+}
+.particle{
+  position:absolute;
+  bottom:-10px;
+  width:3px; height:3px;
+  border-radius:50%;
+  background:var(--gold);
+  opacity:0.35;
+  animation:driftUp linear infinite;
+  box-shadow:0 0 6px 1px rgba(217,185,120,0.35);
+}
+.particle.pink{ background:var(--rose); box-shadow:0 0 6px 1px rgba(217,108,138,0.35); }
+@keyframes driftUp{
+  0%{ transform:translateY(0) translateX(0); opacity:0; }
+  10%{ opacity:0.45; }
+  90%{ opacity:0.25; }
+  100%{ transform:translateY(-110vh) translateX(var(--drift, 30px)); opacity:0; }
+}
+
+/* ============================================================
+   1. LOADING SCREEN
+   ============================================================ */
+#loader{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  background:var(--bg-primary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  gap:22px;
+  transition:opacity 1.1s var(--ease-cinema), visibility 1.1s var(--ease-cinema);
+}
+#loader.hide{ opacity:0; visibility:hidden; pointer-events:none; }
+
+.loader-glow{
+  width:64px; height:64px;
+  position:relative;
+}
+.loader-glow::before{
+  content:"";
+  position:absolute; inset:0;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(217,108,138,0.5), rgba(217,108,138,0) 70%);
+  animation:loaderPulse 2.4s ease-in-out infinite;
+}
+.loader-glow::after{
+  content:"";
+  position:absolute;
+  top:50%; left:50%;
+  width:7px; height:7px;
+  margin:-3.5px 0 0 -3.5px;
+  border-radius:50%;
+  background:var(--soft-pink);
+  box-shadow:0 0 14px 4px rgba(244,182,200,0.55);
+}
+@keyframes loaderPulse{
+  0%,100%{ transform:scale(0.75); opacity:0.5; }
+  50%{ transform:scale(1.15); opacity:1; }
+}
+.loader-text{
+  font-family:var(--font-script);
+  font-style:italic;
+  font-size:16.5px;
+  letter-spacing:0.5px;
+  color:var(--ink-muted);
+  opacity:0;
+  animation:loaderTextIn 1.2s var(--ease-cinema) 0.4s forwards;
+}
+@keyframes loaderTextIn{ to{ opacity:1; } }
+
+/* ============================================================
+   NAV DOT PROGRESS (subtle, desktop)
+   ============================================================ */
+.dot-nav{
+  position:fixed;
+  right:26px;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:400;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.dot-nav a{
+  width:6px; height:6px;
+  border-radius:50%;
+  background:rgba(217,185,120,0.28);
+  transition:background .4s ease, transform .4s ease;
+  display:block;
+}
+.dot-nav a.active{ background:var(--gold); transform:scale(1.5); }
+@media (max-width: 900px){ .dot-nav{ display:none; } }
+
+/* ============================================================
+   2. HERO
+   ============================================================ */
+.hero{
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:120px var(--edge-pad) 80px;
+  position:relative;
+}
+.hero-glow{
+  position:absolute;
+  top:8%;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(720px, 90vw);
+  height:420px;
+  background:radial-gradient(ellipse, rgba(217,108,138,0.16), rgba(244,182,200,0.05) 55%, transparent 75%);
+  filter:blur(10px);
+  pointer-events:none;
+  z-index:0;
+}
+.hero-content{ position:relative; z-index:2; }
+
+.hero .eyebrow{ opacity:0; animation:heroFade 1s var(--ease-cinema) 0.3s forwards; }
+
+.hero h1{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:clamp(42px, 9vw, 96px);
+  line-height:1.03;
+  letter-spacing:0.5px;
+  margin:20px 0 0;
+  background:linear-gradient(180deg, var(--warm-white) 40%, var(--soft-pink) 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.hero h1 span{ display:block; }
+.hero h1 .word{
+  display:inline-block;
+  opacity:0;
+  transform:translateY(30px);
+  animation:heroFade 1.1s var(--ease-cinema) forwards;
+}
+.hero h1 .word:nth-child(1){ animation-delay:0.5s; }
+.hero h1 .word:nth-child(2){ animation-delay:0.68s; }
+.hero h1 .word:nth-child(3){ animation-delay:0.86s; }
+
+.hero-subtitle{
+  font-family:var(--font-script);
+  font-style:italic;
+  font-size:clamp(16px, 2.1vw, 21px);
+  color:var(--soft-pink);
+  max-width:560px;
+  margin:26px auto 0;
+  line-height:1.65;
+  opacity:0;
+  animation:heroFade 1.1s var(--ease-cinema) 1.05s forwards;
+}
+
+@keyframes heroFade{
+  to{ opacity:1; transform:translateY(0); }
+}
+
+.hero-meta{
+  margin-top:56px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:14px 10px;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  animation:heroFade 1.1s var(--ease-cinema) 1.3s forwards;
+}
+.hero-pill{
+  border:1px solid var(--glass-border);
+  background:var(--glass-fill);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-radius:100px;
+  padding:10px 22px;
+  font-size:12.5px;
+  letter-spacing:0.06em;
+  color:var(--ink-muted);
+}
+.hero-pill strong{
+  color:var(--warm-white);
+  font-weight:500;
+  font-family:var(--font-body);
+}
+.hero-counter{
+  border:1px solid var(--glass-border);
+  background:var(--glass-fill);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-radius:100px;
+  padding:10px 24px;
+  display:flex;
+  align-items:baseline;
+  gap:8px;
+}
+.hero-counter .num{
+  font-family:var(--font-display);
+  font-size:20px;
+  color:var(--gold);
+  font-variant-numeric:tabular-nums;
+}
+.hero-counter .lbl{
+  font-size:11.5px;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+}
+
+.scroll-indicator{
+  position:absolute;
+  bottom:38px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:8px;
+  opacity:0;
+  animation:heroFade 1s ease 1.9s forwards;
+}
+.scroll-indicator .line{
+  width:1px; height:38px;
+  background:linear-gradient(180deg, var(--gold), transparent);
+  animation:scrollLine 2.2s ease-in-out infinite;
+}
+@keyframes scrollLine{
+  0%{ transform:scaleY(0); transform-origin:top; }
+  50%{ transform:scaleY(1); transform-origin:top; }
+  50.1%{ transform-origin:bottom; }
+  100%{ transform:scaleY(0); transform-origin:bottom; }
+}
+.scroll-indicator span{
+  font-size:10px;
+  letter-spacing:0.24em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+}
+
+/* ============================================================
+   3. OUR NUMBERS
+   ============================================================ */
+.numbers-card{
+  max-width:1040px;
+  margin:0 auto;
+  border:1px solid var(--glass-border);
+  background:linear-gradient(155deg, rgba(255,247,242,0.055), rgba(255,247,242,0.015));
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
+  border-radius:22px;
+  padding:clamp(36px, 6vw, 64px) clamp(20px, 5vw, 48px);
+  box-shadow:0 40px 90px -40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:36px 24px;
+  text-align:center;
+}
+.numbers-card .stat{ position:relative; }
+.numbers-card .stat:not(:last-child)::after{
+  content:"";
+  position:absolute;
+  right:-12px; top:8%;
+  height:84%;
+  width:1px;
+  background:linear-gradient(180deg, transparent, var(--hairline), transparent);
+}
+.stat-value{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:clamp(28px, 3.6vw, 42px);
+  color:var(--warm-white);
+  font-variant-numeric:tabular-nums;
+}
+.stat-value .accent{ color:var(--gold); }
+.stat-label{
+  margin-top:8px;
+  font-size:11.5px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--ink-muted);
+}
+@media (max-width:760px){
+  .numbers-card{ grid-template-columns:repeat(2,1fr); }
+  .numbers-card .stat:nth-child(2)::after{ display:none; }
+}
+
+/* ============================================================
+   4. OUR STORY — vertical timeline
+   ============================================================ */
+.story-header, .love-header, .gallery-header, .future-header{ text-align:center; max-width:640px; margin:0 auto; }
+
+.timeline{
+  max-width:880px;
+  margin:88px auto 0;
+  position:relative;
+}
+.timeline::before{
+  content:"";
+  position:absolute;
+  left:31px;
+  top:6px; bottom:6px;
+  width:1px;
+  background:linear-gradient(180deg, transparent, var(--hairline) 8%, var(--hairline) 92%, transparent);
+}
+@media (min-width:760px){
+  .timeline::before{ left:50%; margin-left:-0.5px; }
+}
+
+.chapter{
+  position:relative;
+  padding-left:76px;
+  margin-bottom:76px;
+}
+.chapter:last-child{ margin-bottom:0; }
+
+.chapter-num{
+  position:absolute;
+  left:0; top:0;
+  width:64px; height:64px;
+  border-radius:50%;
+  border:1px solid var(--glass-border);
+  background:var(--bg-secondary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--font-display);
+  font-size:17px;
+  color:var(--gold);
+  z-index:2;
+}
+
+.chapter-body{
+  border:1px solid var(--glass-border);
+  background:var(--glass-fill);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-radius:16px;
+  padding:28px 26px;
+  display:grid;
+  gap:20px;
+}
+.chapter-date{
+  font-size:11px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--rose);
+}
+.chapter-title{
+  font-family:var(--font-display);
+  font-weight:500;
+  font-size:clamp(21px, 2.6vw, 27px);
+  margin:6px 0 0;
+}
+.chapter-photo{
+  width:100%;
+  aspect-ratio:16/10;
+  border-radius:10px;
+  overflow:hidden;
+  border:1px solid var(--glass-border);
+}
+.chapter-photo img{ width:100%; height:100%; object-fit:cover; }
+.chapter-desc{
+  font-size:14.5px;
+  line-height:1.8;
+  color:var(--ink-muted);
+  font-weight:300;
+}
+
+@media (min-width:760px){
+  .timeline{ padding:0; }
+  .chapter{ padding-left:0; width:calc(50% - 46px); }
+  .chapter:nth-child(odd){ margin-right:auto; text-align:right; }
+  .chapter:nth-child(even){ margin-left:auto; }
+  .chapter-num{ left:auto; }
+  .chapter:nth-child(odd) .chapter-num{ right:-92px; }
+  .chapter:nth-child(even) .chapter-num{ left:-92px; }
+  .chapter:nth-child(odd) .chapter-body{ margin-left:auto; }
+}
+
+/* ============================================================
+   5. MEMORY GALLERY — masonry + lightbox
+   ============================================================ */
+.gallery-grid{
+  max-width:1180px;
+  margin:70px auto 0;
+  columns:3 260px;
+  column-gap:22px;
+}
+@media (max-width:900px){ .gallery-grid{ columns:2 200px; } }
+@media (max-width:560px){ .gallery-grid{ columns:1; } }
+
+.gallery-item{
+  break-inside:avoid;
+  margin-bottom:22px;
+  border:none;
+  padding:0;
+  background:none;
+  display:block;
+  width:100%;
+  cursor:pointer;
+  position:relative;
+  border-radius:12px;
+  overflow:hidden;
+  transform:rotate(var(--tilt, 0deg));
+  transition:transform .55s var(--ease-cinema), box-shadow .55s ease;
+  box-shadow:0 18px 40px -22px rgba(0,0,0,0.7);
+}
+.gallery-item:nth-child(3n+1){ --tilt:-1.1deg; }
+.gallery-item:nth-child(3n+2){ --tilt:0.9deg; }
+.gallery-item:nth-child(3n){ --tilt:-0.5deg; }
+.gallery-item:hover, .gallery-item:focus-visible{
+  transform:rotate(0deg) translateY(-6px) scale(1.015);
+  box-shadow:0 26px 60px -22px rgba(217,108,138,0.28);
+}
+.gallery-item img{
+  width:100%;
+  height:auto;
+  display:block;
+  transition:transform .8s var(--ease-cinema);
+}
+.gallery-item:hover img{ transform:scale(1.05); }
+.gallery-item .cap{
+  position:absolute;
+  inset:auto 0 0 0;
+  padding:26px 16px 14px;
+  background:linear-gradient(0deg, rgba(8,5,10,0.88), transparent);
+  text-align:left;
+  font-family:var(--font-script);
+  font-style:italic;
+  font-size:14.5px;
+  color:var(--warm-white);
+}
+
+/* lightbox */
+.lightbox{
+  position:fixed;
+  inset:0;
+  z-index:9500;
+  background:rgba(4,2,6,0.92);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:32px;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .45s ease, visibility .45s ease;
+}
+.lightbox.show{ opacity:1; visibility:visible; }
+.lightbox-inner{
+  max-width:min(820px, 92vw);
+  max-height:88vh;
+  text-align:center;
+  transform:scale(0.92) translateY(16px);
+  opacity:0;
+  transition:transform .5s var(--ease-cinema), opacity .5s var(--ease-cinema);
+}
+.lightbox.show .lightbox-inner{ transform:scale(1) translateY(0); opacity:1; }
+.lightbox-inner img{
+  max-height:70vh;
+  width:auto;
+  margin:0 auto;
+  border-radius:8px;
+  border:1px solid var(--glass-border);
+}
+.lightbox-cap{
+  font-family:var(--font-script);
+  font-style:italic;
+  font-size:18px;
+  color:var(--soft-pink);
+  margin-top:18px;
+}
+.lightbox-close{
+  position:fixed;
+  top:26px; right:30px;
+  background:none;
+  border:1px solid var(--glass-border);
+  color:var(--warm-white);
+  width:42px; height:42px;
+  border-radius:50%;
+  font-size:18px;
+  cursor:pointer;
+  transition:background .3s ease, transform .3s ease;
+}
+.lightbox-close:hover{ background:var(--glass-fill); transform:rotate(90deg); }
+
+/* ============================================================
+   6. THINGS I LOVE ABOUT YOU
+   ============================================================ */
+.love-grid{
+  max-width:1080px;
+  margin:64px auto 0;
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
+  gap:20px;
+}
+.love-card{
+  border:1px solid var(--glass-border);
+  background:var(--glass-fill);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-radius:16px;
+  padding:30px 24px;
+  text-align:left;
+  position:relative;
+  overflow:hidden;
+  transition:transform .5s var(--ease-cinema), border-color .5s ease, background .5s ease;
+}
+.love-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:radial-gradient(180px 140px at 20% 0%, rgba(217,108,138,0.16), transparent 70%);
+  opacity:0;
+  transition:opacity .5s ease;
+}
+.love-card:hover, .love-card:focus-within{
+  transform:translateY(-7px);
+  border-color:rgba(217,108,138,0.4);
+}
+.love-card:hover::before{ opacity:1; }
+.love-num{
+  font-family:var(--font-display);
+  font-size:12px;
+  color:var(--gold);
+  opacity:0.8;
+}
+.love-title{
+  font-family:var(--font-display);
+  font-size:22px;
+  font-weight:500;
+  margin:10px 0 8px;
+  position:relative;
+}
+.love-desc{
+  font-size:13.5px;
+  line-height:1.7;
+  color:var(--ink-muted);
+  font-weight:300;
+  position:relative;
+}
+
+/* ============================================================
+   7. OUR SONG
+   ============================================================ */
+.song-panel{
+  max-width:560px;
+  margin:64px auto 0;
+  border:1px solid var(--glass-border);
+  background:linear-gradient(160deg, rgba(92,24,53,0.35), rgba(255,247,242,0.03));
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-radius:20px;
+  padding:30px;
+  display:flex;
+  gap:20px;
+  align-items:center;
+  box-shadow:0 40px 90px -50px rgba(0,0,0,0.7);
+}
+.song-cover{
+  width:92px; height:92px;
+  border-radius:10px;
+  flex-shrink:0;
+  background:linear-gradient(150deg, var(--accent-deep), var(--bg-secondary));
+  border:1px solid var(--glass-border);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.song-cover img{ width:100%; height:100%; object-fit:cover; }
+.song-cover svg{ width:30px; height:30px; opacity:0.55; }
+.song-info{ flex:1; min-width:0; }
+.song-title{ font-family:var(--font-display); font-size:19px; font-weight:500; }
+.song-artist{ font-size:12.5px; color:var(--ink-muted); margin-top:3px; }
+
+.song-controls{ display:flex; align-items:center; gap:14px; margin-top:14px; }
+.play-btn{
+  width:40px; height:40px;
+  border-radius:50%;
+  border:1px solid var(--gold);
+  background:rgba(217,185,120,0.08);
+  color:var(--gold);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  flex-shrink:0;
+  transition:background .3s ease, transform .3s ease;
+}
+.play-btn:hover{ background:rgba(217,185,120,0.18); transform:scale(1.06); }
+.play-btn svg{ width:14px; height:14px; }
+
+.song-progress{
+  flex:1;
+  height:2px;
+  background:rgba(255,247,242,0.14);
+  border-radius:2px;
+  overflow:hidden;
+}
+.song-progress-bar{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg, var(--rose), var(--gold));
+  transition:width .3s linear;
+}
+.song-panel.playing .song-progress-bar{ transition:width 30s linear; width:100%; }
+
+.waveform{ display:flex; align-items:flex-end; gap:2px; height:16px; }
+.waveform span{
+  width:2px;
+  background:var(--rose);
+  border-radius:1px;
+  opacity:0.55;
+  animation:wave 1.1s ease-in-out infinite;
+  animation-play-state:paused;
+  height:30%;
+}
+.song-panel.playing .waveform span{ animation-play-state:running; }
+.waveform span:nth-child(odd){ animation-duration:0.9s; }
+.waveform span:nth-child(3n){ animation-duration:1.3s; }
+@keyframes wave{
+  0%,100%{ height:22%; } 50%{ height:100%; }
+}
+
+@media (max-width:520px){ .song-panel{ flex-direction:column; text-align:center; } .song-controls{ justify-content:center; } }
+
+/* ============================================================
+   8. EMOTIONAL MESSAGE
+   ============================================================ */
+.message-section{
+  min-height:90svh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:var(--section-pad) var(--edge-pad);
+}
+.message-lines p{
+  font-family:var(--font-script);
+  font-style:italic;
+  font-size:clamp(20px, 3.6vw, 34px);
+  line-height:1.6;
+  color:var(--ink-muted);
+  max-width:680px;
+  margin:0 auto 26px;
+  opacity:0;
+  transform:translateY(14px);
+  transition:opacity 1.3s var(--ease-cinema), transform 1.3s var(--ease-cinema);
+}
+.message-lines p.show{ opacity:1; transform:translateY(0); }
+.message-lines p:last-child{
+  color:var(--warm-white);
+  font-family:var(--font-display);
+  font-style:normal;
+  font-size:clamp(24px, 4vw, 40px);
+  margin-top:12px;
+}
+
+/* ============================================================
+   9. FUTURE SECTION
+   ============================================================ */
+.future-timeline{
+  max-width:900px;
+  margin:74px auto 0;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  position:relative;
+}
+@media (min-width:760px){ .future-timeline{ flex-direction:row; align-items:flex-start; justify-content:space-between; } }
+
+.future-line-track{
+  position:absolute;
+  z-index:0;
+  background:rgba(255,247,242,0.1);
+}
+@media (min-width:760px){
+  .future-line-track{ left:8%; right:8%; top:9px; height:1px; }
+  .future-line-fill{ position:absolute; inset:0; width:0; background:linear-gradient(90deg, var(--rose), var(--gold)); transition:width 1.8s var(--ease-cinema); }
+}
+@media (max-width:759px){
+  .future-line-track{ top:9px; bottom:9px; left:9px; width:1px; }
+  .future-line-fill{ position:absolute; inset:0; height:0; background:linear-gradient(180deg, var(--rose), var(--gold)); transition:height 1.8s var(--ease-cinema); }
+}
+.future-timeline.in-view .future-line-fill{ width:100%; height:100%; }
+
+.milestone{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  gap:16px;
+  padding:16px 0;
+  flex:1;
+}
+@media (min-width:760px){ .milestone{ flex-direction:column; text-align:center; gap:14px; } }
+.milestone-dot{
+  width:19px; height:19px;
+  border-radius:50%;
+  background:var(--bg-primary);
+  border:1px solid var(--gold);
+  flex-shrink:0;
+  position:relative;
+}
+.milestone.is-now .milestone-dot{ background:var(--gold); box-shadow:0 0 0 5px rgba(217,185,120,0.16); }
+.milestone-label{ font-family:var(--font-display); font-size:16.5px; }
+.milestone.is-now .milestone-label{ color:var(--gold); }
+
+.future-note{
+  text-align:center;
+  max-width:520px;
+  margin:56px auto 0;
+  font-size:14px;
+  color:var(--ink-faint);
+  font-style:italic;
+  font-family:var(--font-script);
+}
+
+/* ============================================================
+   10. FINAL SURPRISE
+   ============================================================ */
+.finale{
+  min-height:100svh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  position:relative;
+}
+.finale-btn{
+  margin-top:34px;
+  border:1px solid var(--gold);
+  background:linear-gradient(160deg, rgba(217,185,120,0.14), rgba(217,108,138,0.08));
+  color:var(--warm-white);
+  font-family:var(--font-display);
+  font-size:16px;
+  letter-spacing:0.03em;
+  padding:17px 42px;
+  border-radius:100px;
+  cursor:pointer;
+  position:relative;
+  transition:background .4s ease, box-shadow .4s ease;
+}
+.finale-btn:hover{ background:linear-gradient(160deg, rgba(217,185,120,0.24), rgba(217,108,138,0.16)); box-shadow:0 0 44px -8px rgba(217,108,138,0.45); }
+
+.finale-overlay{
+  position:fixed;
+  inset:0;
+  z-index:9800;
+  background:rgba(4,2,6,0.94);
+  opacity:0;
+  visibility:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:26px;
+  transition:opacity .8s var(--ease-cinema), visibility .8s var(--ease-cinema);
+}
+.finale-overlay.show{ opacity:1; visibility:visible; }
+
+.envelope-wrap{
+  width:min(360px, 86vw);
+  perspective:1200px;
+}
+.envelope{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/10;
+  cursor:default;
+}
+.env-back{
+  position:absolute; inset:0;
+  background:linear-gradient(160deg, var(--accent-deep), var(--bg-secondary));
+  border:1px solid var(--glass-border);
+  border-radius:8px;
+}
+.env-flap{
+  position:absolute;
+  top:0; left:0; right:0;
+  height:56%;
+  background:linear-gradient(160deg, #6c2140, var(--accent-deep));
+  clip-path:polygon(0 0, 100% 0, 50% 100%);
+  transform-origin:top center;
+  transition:transform 1s var(--ease-cinema);
+  border-radius:8px 8px 0 0;
+  z-index:3;
+}
+.finale-overlay.opened .env-flap{ transform:rotateX(180deg); }
+.env-seal{
+  position:absolute;
+  top:38%; left:50%;
+  width:34px; height:34px;
+  margin:-17px 0 0 -17px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 30%, var(--rose), var(--accent-deep));
+  border:1px solid rgba(217,185,120,0.5);
+  z-index:4;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+  transition:opacity .4s ease, transform .5s ease;
+}
+.finale-overlay.opened .env-seal{ opacity:0; transform:scale(0.4); }
+
+.letter-card{
+  position:absolute;
+  left:6%;
+  right:6%;
+  bottom:6%;
+  top:20%;
+  background:linear-gradient(170deg, #100910, #1a0d16);
+  border:1px solid var(--glass-border);
+  border-radius:8px;
+  z-index:2;
+  transform:translateY(0);
+  transition:transform 1.1s var(--ease-cinema) 0.35s;
+  overflow:hidden;
+}
+.finale-overlay.opened .letter-card{ transform:translateY(-64%); }
+
+.letter-content{
+  position:fixed;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%) scale(0.96);
+  width:min(560px, 90vw);
+  max-height:82vh;
+  overflow-y:auto;
+  background:linear-gradient(170deg, rgba(38,11,24,0.92), rgba(8,5,10,0.96));
+  border:1px solid var(--glass-border);
+  border-radius:14px;
+  padding:clamp(28px,5vw,48px);
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .8s var(--ease-cinema) 0.9s, transform .8s var(--ease-cinema) 0.9s, visibility .8s;
+  z-index:5;
+  text-align:left;
+}
+.finale-overlay.opened .letter-content{ opacity:1; visibility:visible; transform:translate(-50%,-50%) scale(1); }
+
+.letter-content .eyebrow{ display:block; text-align:center; }
+.letter-content h3{
+  font-family:var(--font-display);
+  font-weight:500;
+  text-align:center;
+  font-size:clamp(22px,3vw,28px);
+  margin:10px 0 24px;
+}
+.letter-body p{
+  font-size:15px;
+  line-height:1.95;
+  color:var(--ink-muted);
+  font-weight:300;
+  margin:0 0 16px;
+  white-space:pre-line;
+}
+.letter-sign{
+  font-family:var(--font-script);
+  font-style:italic;
+  font-size:19px;
+  color:var(--soft-pink);
+  text-align:right;
+  margin-top:20px;
+}
+.finale-close{
+  position:fixed;
+  top:24px; right:26px;
+  background:none;
+  border:1px solid var(--glass-border);
+  color:var(--warm-white);
+  width:40px; height:40px;
+  border-radius:50%;
+  cursor:pointer;
+  z-index:6;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .6s ease 1.1s, visibility .6s ease 1.1s, transform .3s ease;
+}
+.finale-overlay.opened .finale-close{ opacity:1; visibility:visible; }
+.finale-close:hover{ transform:rotate(90deg); }
+
+.finale-hearts{ position:fixed; inset:0; z-index:4; pointer-events:none; }
+.finale-hearts span{
+  position:absolute;
+  bottom:-4%;
+  font-size:13px;
+  color:var(--rose);
+  opacity:0;
+}
+.finale-overlay.opened .finale-hearts span{ animation:heartFloat 4.5s ease-in infinite; }
+@keyframes heartFloat{
+  0%{ opacity:0; transform:translateY(0) scale(0.8); }
+  12%{ opacity:0.6; }
+  85%{ opacity:0.35; }
+  100%{ opacity:0; transform:translateY(-90vh) scale(1.1); }
+}
+
+.finale-glow{
+  position:fixed;
+  inset:0;
+  z-index:1;
+  background:radial-gradient(ellipse 60% 40% at 50% 50%, rgba(217,108,138,0.14), transparent 70%);
+  opacity:0;
+  transition:opacity 1.4s ease 0.4s;
+  pointer-events:none;
+}
+.finale-overlay.opened .finale-glow{ opacity:1; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer{
+  text-align:center;
+  padding:60px var(--edge-pad) 70px;
+  color:var(--ink-faint);
+  font-size:12px;
+  letter-spacing:0.04em;
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:0.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:0.15s !important;
+    scroll-behavior:auto !important;
+  }
+  [data-reveal]{ opacity:1; transform:none; }
+  .particle-field, .cursor-glow{ display:none; }
+}
+
+/* ============================================================
+   PASSWORD GATE — access protection
+   ============================================================ */
+#passwordGate{
+  position:fixed;
+  inset:0;
+  z-index:20000;
+  background:var(--bg-primary);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+#passwordGate.hidden{display:none;}
+.password-card{
+  width:min(430px,92vw);
+  text-align:center;
+  padding:42px 30px;
+  border:1px solid var(--glass-border);
+  border-radius:20px;
+  background:linear-gradient(155deg,rgba(255,247,242,.055),rgba(255,247,242,.015));
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
+  box-shadow:0 40px 90px -40px rgba(0,0,0,.7);
+}
+.password-card h2{
+  font-family:var(--font-display);
+  font-weight:500;
+  font-size:32px;
+  margin:0 0 10px;
+}
+.password-card p{
+  color:var(--ink-muted);
+  font-size:13.5px;
+  margin:0 0 24px;
+}
+.password-row{display:flex;gap:10px;}
+#sitePassword{
+  flex:1;
+  min-width:0;
+  height:46px;
+  border:1px solid var(--glass-border);
+  border-radius:100px;
+  outline:none;
+  background:rgba(255,247,242,.045);
+  color:var(--warm-white);
+  padding:0 18px;
+  font:inherit;
+}
+#sitePassword:focus{border-color:var(--gold);}
+#passwordSubmit{
+  height:46px;
+  padding:0 20px;
+  border:1px solid var(--gold);
+  border-radius:100px;
+  background:rgba(217,185,120,.08);
+  color:var(--gold);
+  cursor:pointer;
+  font:inherit;
+}
+#passwordSubmit:hover{background:rgba(217,185,120,.18);}
+#passwordError{
+  min-height:18px;
+  margin-top:12px;
+  color:var(--soft-pink);
+  font-size:12px;
+}
+@media(max-width:480px){
+  .password-row{flex-direction:column;}
+  #passwordSubmit{width:100%;}
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============ PASSWORD GATE ============ -->
+<div id="passwordGate" role="dialog" aria-modal="true" aria-label="Password required">
+  <div class="password-card">
+    <span class="eyebrow">A Private Story</span>
+    <h2>Enter Password</h2>
+    <p>This little story is just for you.</p>
+    <form class="password-row" id="passwordForm">
+      <input id="sitePassword" type="password" inputmode="numeric" autocomplete="off" placeholder="Password" aria-label="Password" required>
+      <button id="passwordSubmit" type="submit">Enter</button>
+    </form>
+    <div id="passwordError" aria-live="polite"></div>
+  </div>
+</div>
+
+
+<div class="grain" aria-hidden="true"></div>
+<div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+
+<!-- ============ 1. LOADING SCREEN ============ -->
+<div id="loader" role="status" aria-live="polite">
+  <div class="loader-glow" aria-hidden="true"></div>
+  <p class="loader-text">A little story about us&hellip;</p>
+</div>
+
+<nav class="dot-nav" aria-label="Section navigation">
+  <a href="#hero" data-dot aria-label="Hero"></a>
+  <a href="#numbers" data-dot aria-label="Our numbers"></a>
+  <a href="#story" data-dot aria-label="Our story"></a>
+  <a href="#gallery" data-dot aria-label="Memory gallery"></a>
+  <a href="#love" data-dot aria-label="Things I love about you"></a>
+  <a href="#song" data-dot aria-label="Our song"></a>
+  <a href="#message" data-dot aria-label="A message"></a>
+  <a href="#future" data-dot aria-label="What's next"></a>
+  <a href="#finale" data-dot aria-label="Final surprise"></a>
+</nav>
+
+<main>
+
+  <!-- ============ 2. HERO ============ -->
+  <section class="hero" id="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="particle-field" id="heroParticles" aria-hidden="true"></div>
+    <div class="hero-content">
+      <span class="eyebrow">Three months, one story</span>
+      <h1><span class="word">Three</span> <span class="word">Months</span> <span class="word">of&nbsp;Us</span></h1>
+      <p class="hero-subtitle" id="heroSubtitle"></p>
+      <div class="hero-meta">
+        <span class="hero-pill">For <strong id="partnerNamePill"></strong></span>
+        <span class="hero-pill">Since <strong id="startDatePill"></strong></span>
+        <span class="hero-counter"><span class="num" id="dayCount">0</span><span class="lbl">days&nbsp;together</span></span>
+      </div>
+    </div>
+    <div class="scroll-indicator" aria-hidden="true">
+      <span class="line"></span>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- ============ 3. OUR NUMBERS ============ -->
+  <section id="numbers" aria-label="Our numbers">
+    <div class="numbers-card" data-reveal="scale">
+      <div class="stat">
+        <div class="stat-value"><span class="count-up" data-count="3">0</span></div>
+        <div class="stat-label">Months</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value"><span class="count-up" data-count="90">0</span><span class="accent">+</span></div>
+        <div class="stat-label">Days</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">Countless</div>
+        <div class="stat-label">Memories</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value"><span class="count-up" data-count="1">0</span></div>
+        <div class="stat-label">Beautiful Story</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. OUR STORY ============ -->
+  <section id="story" aria-label="Our story">
+    <div class="story-header" data-reveal>
+      <span class="eyebrow">Our Story</span>
+      <h2 class="section-heading">Every chapter, a small forever</h2>
+      <div class="hr-flourish" aria-hidden="true"></div>
+    </div>
+    <div class="timeline" id="timeline"></div>
+  </section>
+
+  <!-- ============ 5. MEMORY GALLERY ============ -->
+  <section id="gallery" aria-label="Memory gallery">
+    <div class="gallery-header" data-reveal>
+      <span class="eyebrow">Memory Gallery</span>
+      <h2 class="section-heading">Moments worth keeping</h2>
+      <div class="hr-flourish" aria-hidden="true"></div>
+    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </section>
+
+  <!-- ============ 6. THINGS I LOVE ABOUT YOU ============ -->
+  <section id="love" aria-label="Things I love about you">
+    <div class="love-header" data-reveal>
+      <span class="eyebrow">In No Particular Order</span>
+      <h2 class="section-heading">Things I love about you</h2>
+      <div class="hr-flourish" aria-hidden="true"></div>
+    </div>
+    <div class="love-grid" id="loveGrid"></div>
+  </section>
+
+  <!-- ============ 7. OUR SONG ============ -->
+  <section id="song" aria-label="Our song">
+    <div class="story-header" data-reveal>
+      <span class="eyebrow">Our Song</span>
+      <h2 class="section-heading">The one that plays in my head</h2>
+    </div>
+    <div class="song-panel" id="songPanel" data-reveal="scale">
+      <div class="song-cover" id="songCover">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+      </div>
+      <div class="song-info">
+        <div class="song-title" id="songTitle"></div>
+        <div class="song-artist" id="songArtist"></div>
+        <div class="song-controls">
+          <button class="play-btn" id="playBtn" aria-label="Play our song" aria-pressed="false">
+            <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <div class="song-progress" aria-hidden="true"><div class="song-progress-bar" id="progressBar"></div></div>
+          <div class="waveform" aria-hidden="true">
+            <span style="height:40%"></span><span style="height:70%"></span><span style="height:30%"></span>
+            <span style="height:90%"></span><span style="height:50%"></span><span style="height:65%"></span>
+            <span style="height:35%"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- To use a real audio file: add <audio id="songAudio" src="your-song.mp3"></audio> here
+         and it will automatically be used by the play button. -->
+  </section>
+
+  <!-- ============ 8. EMOTIONAL MESSAGE ============ -->
+  <section class="message-section" id="message" aria-label="A message for you">
+    <div class="message-lines" id="messageLines"></div>
+  </section>
+
+  <!-- ============ 9. FUTURE SECTION ============ -->
+  <section id="future" aria-label="What's next">
+    <div class="future-header" data-reveal>
+      <span class="eyebrow">What Comes Next</span>
+      <h2 class="section-heading">To Be Continued&hellip;</h2>
+      <p class="section-sub">Three months down. So many more memories to make.</p>
+    </div>
+    <div class="future-timeline" id="futureTimeline">
+      <div class="future-line-track"><div class="future-line-fill"></div></div>
+    </div>
+    <p class="future-note">and every month after that.</p>
+  </section>
+
+  <!-- ============ 10. FINAL SURPRISE ============ -->
+  <section class="finale" id="finale" aria-label="A surprise for you">
+    <div class="particle-field" aria-hidden="true"></div>
+    <span class="eyebrow">One Last Thing</span>
+    <h2 class="section-heading">There's something for you</h2>
+    <p class="section-sub">Open it when you're ready.</p>
+    <button class="finale-btn magnetic" id="openHeartBtn">Open My Heart ❤</button>
+  </section>
+
+</main>
+
+<footer>made with quiet care, for three months and all the ones still coming</footer>
+
+<!-- ============ LIGHTBOX (gallery) ============ -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button class="lightbox-close" id="lightboxClose" aria-label="Close photo viewer">&times;</button>
+  <div class="lightbox-inner">
+    <img id="lightboxImg" src="" alt="">
+    <p class="lightbox-cap" id="lightboxCap"></p>
+  </div>
+</div>
+
+<!-- ============ FINALE OVERLAY (envelope + letter) ============ -->
+<div class="finale-overlay" id="finaleOverlay" role="dialog" aria-modal="true" aria-label="Your letter">
+  <div class="finale-glow" aria-hidden="true"></div>
+  <div class="finale-hearts" id="finaleHearts" aria-hidden="true"></div>
+  <button class="finale-close" id="finaleClose" aria-label="Close letter">&times;</button>
+  <div class="envelope-wrap">
+    <div class="envelope">
+      <div class="env-back"></div>
+      <div class="letter-card"></div>
+      <div class="env-flap"></div>
+      <div class="env-seal">&hearts;</div>
+    </div>
+  </div>
+  <div class="letter-content" id="letterContent">
+    <span class="eyebrow">Open When You're Ready</span>
+    <h3 id="letterHeading">A letter for you</h3>
+    <div class="letter-body" id="letterBody"></div>
+    <p class="letter-sign" id="letterSign"></p>
+  </div>
+</div>
+
+<script>
+
+/* ============================================================
+   PASSWORD GATE
+   ============================================================ */
+(function(){
+  const intnum = 2322007;
+  const gate = document.getElementById('passwordGate');
+  const form = document.getElementById('passwordForm');
+  const input = document.getElementById('sitePassword');
+  const error = document.getElementById('passwordError');
+
+  document.body.style.overflow = 'hidden';
+  input.focus();
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(input.value === String(intnum)){
+      gate.classList.add('hidden');
+      document.body.style.overflow = '';
+    }else{
+      error.textContent = 'Wrong password. Please try again.';
+      input.value = '';
+      input.focus();
+    }
+  });
+})();
+
+/* ============================================================
+   CONFIG — everything personal lives here.
+   Replace the placeholder values below with the real ones.
+   Image fields accept any URL or relative path; if left as
+   a placeholder they render an elegant generated monogram
+   instead of a broken image.
+   ============================================================ */
+const CONFIG = {
+
+  partnerName: "My Love",              // TODO: his name
+  startDate: "2026-06-07",             // TODO: relationship start date, YYYY-MM-DD
+
+  heroSubtitle: "90 days, countless memories, and somehow… you still make my heart skip a beat.",
+
+  timeline: [
+    {
+      chapter: "01",
+      title: "The Beginning",
+      date: "Day 1",
+      photo: "",
+      desc: "The day everything quietly changed. I didn't know yet how much I'd come to look forward to your name on my screen."
+    },
+    {
+      chapter: "02",
+      title: "Getting Closer",
+      date: "Weeks 2–5",
+      photo: "",
+      desc: "Late-night calls that ran too long, inside jokes we still don't explain to anyone else, and the first time I felt completely myself with you."
+    },
+    {
+      chapter: "03",
+      title: "The Little Things",
+      date: "Month 2",
+      photo: "",
+      desc: "The way you remember small details. The playlists. The check-in texts on hard days. Nothing loud — just steady, and that turned out to be everything."
+    },
+    {
+      chapter: "04",
+      title: "Three Months Later",
+      date: "Today",
+      photo: "",
+      desc: "Here we are — three months in, and it already feels like a story I want to keep writing with you, one ordinary beautiful day at a time."
+    }
+  ],
+
+  gallery: [
+    { photo: "", caption: "the first photo of us" },
+    { photo: "", caption: "that random Tuesday that felt like a holiday" },
+    { photo: "", caption: "you, mid-laugh, unaware I was staring" },
+    { photo: "", caption: "our first trip together" },
+    { photo: "", caption: "the coffee shop that became 'ours'" },
+    { photo: "", caption: "a quiet night that said more than words could" }
+  ],
+
+  loveThings: [
+    { title: "Your Smile", desc: "It still gets me every single time, like it's the first time all over again." },
+    { title: "Your Voice", desc: "The one sound that can turn any bad day into a good one, instantly." },
+    { title: "Your Effort", desc: "The way you show up, again and again, without ever needing to be asked." },
+    { title: "Your Patience", desc: "You make room for me on my hardest days, no questions, no pressure." },
+    { title: "Your Presence", desc: "Somehow, just you being near makes everything feel less heavy." }
+  ],
+
+  song: {
+    title: "Our Song",
+    artist: "Add the artist name here",
+    cover: ""
+  },
+
+  messageLines: [
+    "I don't know what the future looks like…",
+    "but I'm really happy that you're part of my present.",
+    "Happy 3 Months, my love. ❤"
+  ],
+
+  futureMilestones: [
+    { label: "Month 3", now: true },
+    { label: "Month 6", now: false },
+    { label: "Month 12", now: false },
+    { label: "Forever", now: false }
+  ],
+
+  finalLetter: {
+    heading: "Happy Three Months",
+    body: "If you're reading this, it means you opened it — and honestly, that alone makes me smile.\n\nThree months isn't very long in the grand scheme of things, but somehow it's been enough to change how my ordinary days feel. You've become the person I want to tell things to first, the one I think of on my commute, the reason a Tuesday can suddenly feel like a good day.\n\nI don't have this all figured out, and I don't need to. I just know that I'm glad it's you — through the easy days and the harder ones, through the small routines we're still building together.\n\nHere's to three months, and to however many more we get to have.",
+    sign: "Always yours"
+  }
+};
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function placeholderImg(label, sub){
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="450">
+    <defs>
+      <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#5C1835"/>
+        <stop offset="100%" stop-color="#260B18"/>
+      </linearGradient>
+    </defs>
+    <rect width="100%" height="100%" fill="url(#g)"/>
+    <text x="50%" y="47%" font-family="Georgia, serif" font-style="italic" font-size="30" fill="#F4B6C8" text-anchor="middle">${label}</text>
+    <text x="50%" y="58%" font-family="Georgia, serif" font-size="13" letter-spacing="2" fill="#D9B978" text-anchor="middle">${(sub||'').toUpperCase()}</text>
+  </svg>`;
+  return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+}
+
+function formatDate(iso){
+  const d = new Date(iso + "T00:00:00");
+  return d.toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
+}
+
+function daysBetween(iso){
+  const start = new Date(iso + "T00:00:00");
+  const now = new Date();
+  const diff = Math.floor((now - start) / (1000*60*60*24));
+  return Math.max(diff, 0);
+}
+
+/* ============================================================
+   POPULATE CONTENT FROM CONFIG
+   ============================================================ */
+document.getElementById('heroSubtitle').textContent = CONFIG.heroSubtitle;
+document.getElementById('partnerNamePill').textContent = CONFIG.partnerName;
+document.getElementById('startDatePill').textContent = formatDate(CONFIG.startDate);
+
+// animated day counter
+(function animateDayCount(){
+  const el = document.getElementById('dayCount');
+  const target = daysBetween(CONFIG.startDate);
+  if(reducedMotion){ el.textContent = target; return; }
+  let start = null;
+  const duration = 1400;
+  function step(ts){
+    if(!start) start = ts;
+    const p = Math.min((ts-start)/duration, 1);
+    el.textContent = Math.floor(p * target);
+    if(p < 1) requestAnimationFrame(step);
+    else el.textContent = target;
+  }
+  requestAnimationFrame(step);
+})();
+
+// timeline
+const timelineEl = document.getElementById('timeline');
+CONFIG.timeline.forEach(ch => {
+  const div = document.createElement('div');
+  div.className = 'chapter';
+  div.setAttribute('data-reveal','');
+  div.innerHTML = `
+    <div class="chapter-num" aria-hidden="true">${ch.chapter}</div>
+    <div class="chapter-body">
+      <div>
+        <span class="chapter-date">${ch.date}</span>
+        <h3 class="chapter-title">${ch.title}</h3>
+      </div>
+      <div class="chapter-photo">
+        <img src="${ch.photo || placeholderImg(ch.title, 'Chapter ' + ch.chapter)}" alt="${ch.title}" loading="lazy">
+      </div>
+      <p class="chapter-desc">${ch.desc}</p>
+    </div>
+  `;
+  timelineEl.appendChild(div);
+});
+
+// gallery
+const galleryEl = document.getElementById('galleryGrid');
+CONFIG.gallery.forEach((item, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'gallery-item';
+  btn.setAttribute('data-reveal','');
+  btn.setAttribute('aria-label', 'Open photo: ' + item.caption);
+  const src = item.photo || placeholderImg('Memory', '0' + (i+1));
+  btn.innerHTML = `
+    <img src="${src}" alt="${item.caption}" loading="lazy">
+    <span class="cap">${item.caption}</span>
+  `;
+  btn.addEventListener('click', () => openLightbox(src, item.caption, btn));
+  galleryEl.appendChild(btn);
+});
+
+// love cards
+const loveEl = document.getElementById('loveGrid');
+CONFIG.loveThings.forEach((item, i) => {
+  const div = document.createElement('div');
+  div.className = 'love-card';
+  div.setAttribute('data-reveal','');
+  div.setAttribute('tabindex','0');
+  div.innerHTML = `
+    <span class="love-num">${String(i+1).padStart(2,'0')}</span>
+    <h3 class="love-title">${item.title}</h3>
+    <p class="love-desc">${item.desc}</p>
+  `;
+  loveEl.appendChild(div);
+});
+
+// song
+document.getElementById('songTitle').textContent = CONFIG.song.title;
+document.getElementById('songArtist').textContent = CONFIG.song.artist;
+if(CONFIG.song.cover){
+  document.getElementById('songCover').innerHTML = `<img src="${CONFIG.song.cover}" alt="${CONFIG.song.title} cover art">`;
+}
+
+// emotional message lines
+const messageEl = document.getElementById('messageLines');
+CONFIG.messageLines.forEach(line => {
+  const p = document.createElement('p');
+  p.textContent = line;
+  messageEl.appendChild(p);
+});
+
+// future timeline
+const futureEl = document.getElementById('futureTimeline');
+CONFIG.futureMilestones.forEach(m => {
+  const div = document.createElement('div');
+  div.className = 'milestone' + (m.now ? ' is-now' : '');
+  div.innerHTML = `<span class="milestone-dot" aria-hidden="true"></span><span class="milestone-label">${m.label}</span>`;
+  futureEl.appendChild(div);
+});
+
+// final letter
+document.getElementById('letterHeading').textContent = CONFIG.finalLetter.heading;
+document.getElementById('letterBody').innerHTML = CONFIG.finalLetter.body
+  .split('\n\n').map(p => `<p>${p}</p>`).join('');
+document.getElementById('letterSign').textContent = CONFIG.finalLetter.sign;
+
+/* ============================================================
+   LOADER
+   ============================================================ */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hide');
+    document.body.style.overflow = '';
+  }, reducedMotion ? 300 : 1600);
+});
+document.body.style.overflow = 'hidden';
+setTimeout(() => { document.body.style.overflow = ''; }, reducedMotion ? 400 : 2200);
+
+/* ============================================================
+   SCROLL REVEAL
+   ============================================================ */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.classList.add('in-view');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+document.querySelectorAll('[data-reveal]').forEach(el => revealObserver.observe(el));
+
+/* ============================================================
+   COUNT-UP STATS
+   ============================================================ */
+const countObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(!entry.isIntersecting) return;
+    countObserver.unobserve(entry.target);
+    const el = entry.target;
+    const target = parseInt(el.dataset.count, 10);
+    if(reducedMotion){ el.textContent = target; return; }
+    let start = null;
+    const duration = 1100;
+    function step(ts){
+      if(!start) start = ts;
+      const p = Math.min((ts-start)/duration, 1);
+      el.textContent = Math.floor(p * target);
+      if(p < 1) requestAnimationFrame(step);
+      else el.textContent = target;
+    }
+    requestAnimationFrame(step);
+  });
+}, { threshold: 0.5 });
+document.querySelectorAll('.count-up').forEach(el => countObserver.observe(el));
+
+/* ============================================================
+   FUTURE TIMELINE LINE FILL
+   ============================================================ */
+const futureObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.classList.add('in-view');
+      futureObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.4 });
+futureObserver.observe(document.getElementById('futureTimeline'));
+
+/* ============================================================
+   GALLERY LIGHTBOX
+   ============================================================ */
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lightboxCap = document.getElementById('lightboxCap');
+const lightboxClose = document.getElementById('lightboxClose');
+let lastGalleryTrigger = null;
+
+function openLightbox(src, cap, trigger){
+  lastGalleryTrigger = trigger;
+  lightboxImg.src = src;
+  lightboxImg.alt = cap;
+  lightboxCap.textContent = cap;
+  lightbox.classList.add('show');
+  lightboxClose.focus();
+  document.addEventListener('keydown', escCloseLightbox);
+}
+function closeLightbox(){
+  lightbox.classList.remove('show');
+  document.removeEventListener('keydown', escCloseLightbox);
+  if(lastGalleryTrigger) lastGalleryTrigger.focus();
+}
+function escCloseLightbox(e){ if(e.key === 'Escape') closeLightbox(); }
+lightboxClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
+
+/* ============================================================
+   OUR SONG — play/pause mock player
+   ============================================================ */
+const songPanel = document.getElementById('songPanel');
+const playBtn = document.getElementById('playBtn');
+const playIcon = document.getElementById('playIcon');
+const progressBar = document.getElementById('progressBar');
+const audioEl = document.getElementById('songAudio'); // present only if user added a real <audio> tag
+let playing = false;
+
+const PAUSE_ICON = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+const PLAY_ICON = '<path d="M8 5v14l11-7z"/>';
+
+playBtn.addEventListener('click', () => {
+  playing = !playing;
+  songPanel.classList.toggle('playing', playing);
+  playBtn.setAttribute('aria-pressed', String(playing));
+  playIcon.innerHTML = playing ? PAUSE_ICON : PLAY_ICON;
+  playBtn.setAttribute('aria-label', playing ? 'Pause our song' : 'Play our song');
+  if(audioEl){
+    playing ? audioEl.play() : audioEl.pause();
+  } else if(!playing){
+    progressBar.style.transition = 'none';
+    progressBar.style.width = '0%';
+    void progressBar.offsetWidth;
+    progressBar.style.transition = '';
+  }
+});
+
+/* ============================================================
+   FINAL SURPRISE — envelope + letter
+   ============================================================ */
+const finaleOverlay = document.getElementById('finaleOverlay');
+const openHeartBtn = document.getElementById('openHeartBtn');
+const finaleClose = document.getElementById('finaleClose');
+const finaleHearts = document.getElementById('finaleHearts');
+
+function buildHearts(){
+  finaleHearts.innerHTML = '';
+  const glyphs = ['❤','♡','❤'];
+  for(let i=0;i<10;i++){
+    const span = document.createElement('span');
+    span.textContent = glyphs[i % glyphs.length];
+    span.style.left = (5 + Math.random()*90) + '%';
+    span.style.animationDelay = (Math.random()*4) + 's';
+    span.style.fontSize = (10 + Math.random()*10) + 'px';
+    finaleHearts.appendChild(span);
+  }
+}
+
+openHeartBtn.addEventListener('click', () => {
+  buildHearts();
+  finaleOverlay.classList.add('show');
+  requestAnimationFrame(() => {
+    setTimeout(() => finaleOverlay.classList.add('opened'), reducedMotion ? 50 : 250);
+  });
+  document.addEventListener('keydown', escCloseFinale);
+});
+function closeFinale(){
+  finaleOverlay.classList.remove('opened');
+  setTimeout(() => finaleOverlay.classList.remove('show'), 500);
+  document.removeEventListener('keydown', escCloseFinale);
+  openHeartBtn.focus();
+}
+function escCloseFinale(e){ if(e.key === 'Escape') closeFinale(); }
+finaleClose.addEventListener('click', closeFinale);
+
+/* ============================================================
+   PARTICLES (ambient, decorative)
+   ============================================================ */
+if(!reducedMotion){
+  document.querySelectorAll('.particle-field').forEach(field => {
+    const count = 16;
+    for(let i=0;i<count;i++){
+      const p = document.createElement('span');
+      p.className = 'particle' + (i % 2 === 0 ? ' pink' : '');
+      p.style.left = Math.random()*100 + '%';
+      p.style.setProperty('--drift', (Math.random()*60-30) + 'px');
+      p.style.animationDuration = (10 + Math.random()*10) + 's';
+      p.style.animationDelay = (Math.random()*10) + 's';
+      field.appendChild(p);
+    }
+  });
+}
+
+/* ============================================================
+   CURSOR GLOW (desktop, fine pointer only)
+   ============================================================ */
+if(!reducedMotion && window.matchMedia('(pointer: fine)').matches){
+  const glow = document.getElementById('cursorGlow');
+  let raf = null, mx = 0, my = 0;
+  window.addEventListener('mousemove', (e) => {
+    mx = e.clientX; my = e.clientY;
+    glow.classList.add('active');
+    if(!raf){
+      raf = requestAnimationFrame(() => {
+        glow.style.transform = `translate(${mx}px, ${my}px)`;
+        raf = null;
+      });
+    }
+  });
+}
+
+/* ============================================================
+   MAGNETIC BUTTON
+   ============================================================ */
+if(!reducedMotion){
+  document.querySelectorAll('.magnetic').forEach(btn => {
+    btn.addEventListener('mousemove', (e) => {
+      const r = btn.getBoundingClientRect();
+      const x = e.clientX - r.left - r.width/2;
+      const y = e.clientY - r.top - r.height/2;
+      btn.style.transform = `translate(${x*0.18}px, ${y*0.3}px)`;
+    });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+  });
+}
+
+/* ============================================================
+   DOT NAV — active section tracking
+   ============================================================ */
+const dots = document.querySelectorAll('.dot-nav a');
+if(dots.length){
+  const navSections = Array.from(dots).map(d => document.querySelector(d.getAttribute('href')));
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const idx = navSections.indexOf(entry.target);
+      if(idx === -1) return;
+      if(entry.isIntersecting){
+        dots.forEach(d => d.classList.remove('active'));
+        dots[idx].classList.add('active');
+      }
+    });
+  }, { threshold: 0.5 });
+  navSections.forEach(s => s && navObserver.observe(s));
+}
+</script>
+</body>
+</html>
