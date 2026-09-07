@@ -562,112 +562,376 @@ section{ position:relative; padding:var(--section-pad) var(--edge-pad); }
 }
 
 /* ============================================================
-   5. MEMORY GALLERY — masonry + lightbox
+   5. GAMES — selection + playable games
    ============================================================ */
-.gallery-grid{
-  max-width:1180px;
-  margin:70px auto 0;
-  columns:3 260px;
-  column-gap:22px;
-}
-@media (max-width:900px){ .gallery-grid{ columns:2 200px; } }
-@media (max-width:560px){ .gallery-grid{ columns:1; } }
+.games-header{ text-align:center; max-width:640px; margin:0 auto; }
 
-.gallery-item{
-  break-inside:avoid;
-  margin-bottom:22px;
-  border:none;
-  padding:0;
-  background:none;
-  display:block;
-  width:100%;
-  cursor:pointer;
+.games-grid{
+  max-width:900px;
+  margin:64px auto 0;
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:24px;
+}
+
+.game-card{
+  border:1px solid var(--glass-border);
+  background:linear-gradient(155deg, rgba(255,247,242,0.055), rgba(255,247,242,0.015));
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  border-radius:20px;
+  padding:34px 30px;
+  min-height:280px;
   position:relative;
-  border-radius:12px;
   overflow:hidden;
-  transform:rotate(var(--tilt, 0deg));
-  transition:transform .55s var(--ease-cinema), box-shadow .55s ease;
-  box-shadow:0 18px 40px -22px rgba(0,0,0,0.7);
-}
-.gallery-item:nth-child(3n+1){ --tilt:-1.1deg; }
-.gallery-item:nth-child(3n+2){ --tilt:0.9deg; }
-.gallery-item:nth-child(3n){ --tilt:-0.5deg; }
-.gallery-item:hover, .gallery-item:focus-visible{
-  transform:rotate(0deg) translateY(-6px) scale(1.015);
-  box-shadow:0 26px 60px -22px rgba(217,108,138,0.28);
-}
-.gallery-item img{
-  width:100%;
-  height:auto;
-  display:block;
-  transition:transform .8s var(--ease-cinema);
-}
-.gallery-item:hover img{ transform:scale(1.05); }
-.gallery-item .cap{
-  position:absolute;
-  inset:auto 0 0 0;
-  padding:26px 16px 14px;
-  background:linear-gradient(0deg, rgba(8,5,10,0.88), transparent);
   text-align:left;
-  font-family:var(--font-script);
-  font-style:italic;
-  font-size:14.5px;
+  cursor:pointer;
   color:var(--warm-white);
+  font:inherit;
+  transition:transform .55s var(--ease-cinema), border-color .45s ease, box-shadow .55s ease, background .45s ease;
+  box-shadow:0 30px 70px -45px rgba(0,0,0,0.7);
 }
 
-/* lightbox */
-.lightbox{
-  position:fixed;
-  inset:0;
-  z-index:9500;
-  background:rgba(4,2,6,0.92);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
+.game-card::before{
+  content:"";
+  position:absolute;
+  width:220px; height:220px;
+  top:-100px; right:-80px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(217,108,138,0.18), transparent 70%);
+  transition:transform .7s var(--ease-cinema), opacity .5s ease;
+  opacity:.7;
+}
+
+.game-card:hover, .game-card:focus-visible{
+  transform:translateY(-8px);
+  border-color:rgba(217,185,120,0.42);
+  box-shadow:0 36px 80px -38px rgba(217,108,138,0.28);
+}
+
+.game-card:hover::before{ transform:scale(1.25); }
+
+.game-number{
+  font-family:var(--font-display);
+  font-size:12px;
+  letter-spacing:.14em;
+  color:var(--gold);
+  opacity:.8;
+}
+
+.game-icon{
+  width:58px; height:58px;
+  margin:24px 0 22px;
+  border:1px solid var(--glass-border);
+  border-radius:16px;
   display:flex;
   align-items:center;
   justify-content:center;
-  padding:32px;
+  background:rgba(217,108,138,0.08);
+  color:var(--soft-pink);
+  font-family:var(--font-display);
+  font-size:26px;
+  position:relative;
+}
+
+.game-card h3{
+  font-family:var(--font-display);
+  font-size:28px;
+  font-weight:500;
+  margin:0 0 9px;
+  position:relative;
+}
+
+.game-card p{
+  margin:0;
+  color:var(--ink-muted);
+  font-size:13.5px;
+  line-height:1.75;
+  font-weight:300;
+  max-width:390px;
+  position:relative;
+}
+
+.game-open{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-top:24px;
+  color:var(--gold);
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  position:relative;
+}
+
+.game-open span{ transition:transform .35s ease; }
+.game-card:hover .game-open span{ transform:translateX(4px); }
+
+.games-modal{
+  position:fixed;
+  inset:0;
+  z-index:9700;
+  background:rgba(4,2,6,.94);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
   opacity:0;
   visibility:hidden;
-  transition:opacity .45s ease, visibility .45s ease;
+  transition:opacity .5s ease, visibility .5s ease;
 }
-.lightbox.show{ opacity:1; visibility:visible; }
-.lightbox-inner{
-  max-width:min(820px, 92vw);
-  max-height:88vh;
-  text-align:center;
-  transform:scale(0.92) translateY(16px);
-  opacity:0;
-  transition:transform .5s var(--ease-cinema), opacity .5s var(--ease-cinema);
-}
-.lightbox.show .lightbox-inner{ transform:scale(1) translateY(0); opacity:1; }
-.lightbox-inner img{
-  max-height:70vh;
-  width:auto;
-  margin:0 auto;
-  border-radius:8px;
+
+.games-modal.show{ opacity:1; visibility:visible; }
+
+.games-modal-inner{
+  width:min(760px, 94vw);
+  max-height:90vh;
+  overflow:auto;
   border:1px solid var(--glass-border);
+  border-radius:20px;
+  background:linear-gradient(160deg, rgba(38,11,24,.94), rgba(8,5,10,.98));
+  box-shadow:0 50px 110px -45px rgba(0,0,0,.8);
+  padding:clamp(24px,5vw,42px);
+  transform:translateY(18px) scale(.97);
+  transition:transform .55s var(--ease-cinema);
 }
-.lightbox-cap{
+
+.games-modal.show .games-modal-inner{ transform:translateY(0) scale(1); }
+
+.game-modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+  margin-bottom:26px;
+}
+
+.game-modal-head .eyebrow{ margin-top:4px; }
+
+.game-modal-title{
+  font-family:var(--font-display);
+  font-size:clamp(26px,4vw,36px);
+  font-weight:500;
+  margin:8px 0 0;
+}
+
+.game-close{
+  flex:0 0 auto;
+  width:40px; height:40px;
+  border-radius:50%;
+  border:1px solid var(--glass-border);
+  background:none;
+  color:var(--warm-white);
+  cursor:pointer;
+  font-size:18px;
+  transition:background .3s ease, transform .3s ease;
+}
+
+.game-close:hover{ background:var(--glass-fill); transform:rotate(90deg); }
+
+.ttt-board{
+  width:min(360px, 82vw);
+  aspect-ratio:1;
+  margin:12px auto 22px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.ttt-cell{
+  border:1px solid var(--glass-border);
+  border-radius:14px;
+  background:rgba(255,247,242,.045);
+  color:var(--warm-white);
+  font-family:var(--font-display);
+  font-size:clamp(34px,8vw,58px);
+  cursor:pointer;
+  transition:background .25s ease, transform .25s ease, border-color .25s ease;
+}
+
+.ttt-cell:hover:not(:disabled){
+  background:rgba(217,108,138,.1);
+  border-color:rgba(217,185,120,.42);
+  transform:scale(1.025);
+}
+
+.ttt-cell:disabled{ cursor:default; }
+
+.game-status{
+  text-align:center;
+  color:var(--soft-pink);
   font-family:var(--font-script);
   font-style:italic;
   font-size:18px;
-  color:var(--soft-pink);
+  min-height:28px;
+}
+
+.game-action-row{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:10px;
   margin-top:18px;
 }
-.lightbox-close{
-  position:fixed;
-  top:26px; right:30px;
-  background:none;
-  border:1px solid var(--glass-border);
-  color:var(--warm-white);
-  width:42px; height:42px;
-  border-radius:50%;
-  font-size:18px;
+
+.game-action{
+  border:1px solid var(--gold);
+  border-radius:100px;
+  background:rgba(217,185,120,.08);
+  color:var(--gold);
+  padding:10px 20px;
   cursor:pointer;
+  font:inherit;
+  font-size:12px;
   transition:background .3s ease, transform .3s ease;
 }
-.lightbox-close:hover{ background:var(--glass-fill); transform:rotate(90deg); }
+
+.game-action:hover{ background:rgba(217,185,120,.18); transform:translateY(-2px); }
+
+.puzzle-setup{
+  border:1px solid var(--glass-border);
+  border-radius:16px;
+  padding:18px;
+  background:rgba(255,247,242,.025);
+}
+
+.puzzle-upload-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+}
+
+.puzzle-upload-label{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  border:1px solid var(--glass-border);
+  border-radius:100px;
+  padding:10px 16px;
+  color:var(--gold);
+  cursor:pointer;
+  font-size:12px;
+  transition:background .3s ease, border-color .3s ease;
+}
+
+.puzzle-upload-label:hover{
+  background:rgba(217,185,120,.08);
+  border-color:rgba(217,185,120,.42);
+}
+
+#puzzleFiles{ display:none; }
+
+.puzzle-hint{
+  margin:0;
+  color:var(--ink-faint);
+  font-size:12px;
+  line-height:1.6;
+}
+
+.puzzle-thumbs{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(72px,1fr));
+  gap:9px;
+  margin-top:16px;
+}
+
+.puzzle-thumb{
+  aspect-ratio:1;
+  border:1px solid var(--glass-border);
+  border-radius:9px;
+  overflow:hidden;
+  padding:0;
+  background:none;
+  cursor:pointer;
+  opacity:.58;
+  transition:opacity .25s ease, transform .25s ease, border-color .25s ease;
+}
+
+.puzzle-thumb.selected{
+  opacity:1;
+  border-color:var(--gold);
+  box-shadow:0 0 0 2px rgba(217,185,120,.12);
+}
+
+.puzzle-thumb:hover{ opacity:1; transform:translateY(-2px); }
+.puzzle-thumb img{ width:100%; height:100%; object-fit:cover; }
+
+.puzzle-controls{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:20px 0;
+}
+
+.puzzle-select{
+  border:1px solid var(--glass-border);
+  border-radius:100px;
+  background:rgba(255,247,242,.045);
+  color:var(--warm-white);
+  padding:10px 14px;
+  outline:none;
+  font:inherit;
+  font-size:12px;
+}
+
+.puzzle-select option{ background:#160a13; color:var(--warm-white); }
+
+.puzzle-board{
+  width:min(500px, 86vw);
+  aspect-ratio:1;
+  margin:0 auto;
+  display:grid;
+  gap:5px;
+  padding:5px;
+  border:1px solid var(--glass-border);
+  border-radius:15px;
+  background:rgba(255,247,242,.035);
+}
+
+.puzzle-tile{
+  border:0;
+  border-radius:7px;
+  background-repeat:no-repeat;
+  cursor:pointer;
+  padding:0;
+  transition:transform .2s ease, filter .2s ease, opacity .2s ease;
+}
+
+.puzzle-tile:hover{ filter:brightness(1.08); transform:scale(.985); }
+
+.puzzle-tile.empty{
+  opacity:.14;
+  background:none !important;
+  cursor:default;
+}
+
+.puzzle-complete{
+  text-align:center;
+  color:var(--gold);
+  font-family:var(--font-script);
+  font-style:italic;
+  font-size:19px;
+  margin-top:16px;
+  min-height:28px;
+}
+
+@media (max-width:700px){
+  .games-grid{ grid-template-columns:1fr; }
+  .game-card{ min-height:240px; }
+}
+
+@media (max-width:520px){
+  .games-modal{ padding:12px; }
+  .games-modal-inner{ padding:20px 16px; max-height:94vh; }
+  .game-modal-head{ margin-bottom:18px; }
+  .puzzle-upload-row{ align-items:flex-start; flex-direction:column; }
+}
 
 /* ============================================================
    6. THINGS I LOVE ABOUT YOU
@@ -1222,7 +1486,7 @@ footer{
   <a href="#hero" data-dot aria-label="Hero"></a>
   <a href="#numbers" data-dot aria-label="Our numbers"></a>
   <a href="#story" data-dot aria-label="Our story"></a>
-  <a href="#gallery" data-dot aria-label="Memory gallery"></a>
+  <a href="#games" data-dot aria-label="Games"></a>
   <a href="#love" data-dot aria-label="Things I love about you"></a>
   <a href="#song" data-dot aria-label="Our song"></a>
   <a href="#message" data-dot aria-label="A message"></a>
@@ -1284,14 +1548,32 @@ footer{
     <div class="timeline" id="timeline"></div>
   </section>
 
-  <!-- ============ 5. MEMORY GALLERY ============ -->
-  <section id="gallery" aria-label="Memory gallery">
-    <div class="gallery-header" data-reveal>
-      <span class="eyebrow">Memory Gallery</span>
-      <h2 class="section-heading">Moments worth keeping</h2>
+  <!-- ============ 5. GAMES ============ -->
+  <section id="games" aria-label="Games">
+    <div class="games-header" data-reveal>
+      <span class="eyebrow">A Little Something Extra</span>
+      <h2 class="section-heading">Choose a game</h2>
       <div class="hr-flourish" aria-hidden="true"></div>
+      <p class="section-sub">A tiny break from the story — pick one and have a little fun together.</p>
     </div>
-    <div class="gallery-grid" id="galleryGrid"></div>
+
+    <div class="games-grid">
+      <button class="game-card" id="openTttBtn" type="button" data-reveal>
+        <span class="game-number">01</span>
+        <span class="game-icon" aria-hidden="true">×</span>
+        <h3>Tic Tac Toe</h3>
+        <p>A classic little battle of X and O. You go first — see if you can beat the computer.</p>
+        <span class="game-open">Play now <span aria-hidden="true">→</span></span>
+      </button>
+
+      <button class="game-card" id="openPuzzleBtn" type="button" data-reveal>
+        <span class="game-number">02</span>
+        <span class="game-icon" aria-hidden="true">✦</span>
+        <h3>Puzzle Game</h3>
+        <p>Choose photos from your gallery, pick one, and turn it into a little sliding puzzle.</p>
+        <span class="game-open">Build a puzzle <span aria-hidden="true">→</span></span>
+      </button>
+    </div>
   </section>
 
   <!-- ============ 6. THINGS I LOVE ABOUT YOU ============ -->
@@ -1364,15 +1646,6 @@ footer{
 </main>
 
 <footer>made with quiet care, for three months and all the ones still coming</footer>
-
-<!-- ============ LIGHTBOX (gallery) ============ -->
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
-  <button class="lightbox-close" id="lightboxClose" aria-label="Close photo viewer">&times;</button>
-  <div class="lightbox-inner">
-    <img id="lightboxImg" src="" alt="">
-    <p class="lightbox-cap" id="lightboxCap"></p>
-  </div>
-</div>
 
 <!-- ============ FINALE OVERLAY (envelope + letter) ============ -->
 <div class="finale-overlay" id="finaleOverlay" role="dialog" aria-modal="true" aria-label="Your letter">
@@ -1467,15 +1740,6 @@ const CONFIG = {
       photo: "",
       desc: "It’s the little things you remember and notice, the way you understand me without me having to explain everything. The way you care, help me out, and somehow always know when I need a little motivation."
     }
-  ],
-
-  gallery: [
-    { photo: "", caption: "the first photo of us" },
-    { photo: "", caption: "that random Tuesday that felt like a holiday" },
-    { photo: "", caption: "you, mid-laugh, unaware I was staring" },
-    { photo: "", caption: "our first trip together" },
-    { photo: "", caption: "the coffee shop that became 'ours'" },
-    { photo: "", caption: "a quiet night that said more than words could" }
   ],
 
   loveThings: [
@@ -1595,22 +1859,6 @@ CONFIG.timeline.forEach(ch => {
   timelineEl.appendChild(div);
 });
 
-// gallery
-const galleryEl = document.getElementById('galleryGrid');
-CONFIG.gallery.forEach((item, i) => {
-  const btn = document.createElement('button');
-  btn.className = 'gallery-item';
-  btn.setAttribute('data-reveal','');
-  btn.setAttribute('aria-label', 'Open photo: ' + item.caption);
-  const src = item.photo || placeholderImg('Memory', '0' + (i+1));
-  btn.innerHTML = `
-    <img src="${src}" alt="${item.caption}" loading="lazy">
-    <span class="cap">${item.caption}</span>
-  `;
-  btn.addEventListener('click', () => openLightbox(src, item.caption, btn));
-  galleryEl.appendChild(btn);
-});
-
 // love cards
 const loveEl = document.getElementById('loveGrid');
 CONFIG.loveThings.forEach((item, i) => {
@@ -1719,31 +1967,334 @@ const futureObserver = new IntersectionObserver((entries) => {
 futureObserver.observe(document.getElementById('futureTimeline'));
 
 /* ============================================================
-   GALLERY LIGHTBOX
+   GAMES — Tic Tac Toe + custom-photo sliding puzzle
    ============================================================ */
-const lightbox = document.getElementById('lightbox');
-const lightboxImg = document.getElementById('lightboxImg');
-const lightboxCap = document.getElementById('lightboxCap');
-const lightboxClose = document.getElementById('lightboxClose');
-let lastGalleryTrigger = null;
+const gamesModal = document.createElement('div');
+gamesModal.className = 'games-modal';
+gamesModal.id = 'gamesModal';
+gamesModal.setAttribute('role','dialog');
+gamesModal.setAttribute('aria-modal','true');
+gamesModal.setAttribute('aria-label','Game');
+gamesModal.innerHTML = `
+  <div class="games-modal-inner">
+    <div class="game-modal-head">
+      <div>
+        <span class="eyebrow" id="gameModalEyebrow">A Little Game</span>
+        <h2 class="game-modal-title" id="gameModalTitle">Tic Tac Toe</h2>
+      </div>
+      <button class="game-close" id="gameClose" type="button" aria-label="Close game">&times;</button>
+    </div>
 
-function openLightbox(src, cap, trigger){
-  lastGalleryTrigger = trigger;
-  lightboxImg.src = src;
-  lightboxImg.alt = cap;
-  lightboxCap.textContent = cap;
-  lightbox.classList.add('show');
-  lightboxClose.focus();
-  document.addEventListener('keydown', escCloseLightbox);
+    <div id="tttGame">
+      <div class="ttt-board" id="tttBoard" aria-label="Tic Tac Toe board"></div>
+      <div class="game-status" id="tttStatus"></div>
+      <div class="game-action-row">
+        <button class="game-action" id="tttReset" type="button">New game</button>
+      </div>
+    </div>
+
+    <div id="puzzleGame" hidden>
+      <div class="puzzle-setup">
+        <div class="puzzle-upload-row">
+          <p class="puzzle-hint">Choose one or more pictures from your gallery. Tap a thumbnail to use it for the puzzle.</p>
+          <label class="puzzle-upload-label" for="puzzleFiles">Choose pictures</label>
+          <input id="puzzleFiles" type="file" accept="image/*" multiple>
+        </div>
+        <div class="puzzle-thumbs" id="puzzleThumbs"></div>
+      </div>
+
+      <div class="puzzle-controls">
+        <select class="puzzle-select" id="puzzleSize" aria-label="Puzzle difficulty">
+          <option value="3">Easy · 3 × 3</option>
+          <option value="4">Classic · 4 × 4</option>
+        </select>
+        <button class="game-action" id="puzzleShuffle" type="button">Shuffle puzzle</button>
+      </div>
+
+      <div class="puzzle-board" id="puzzleBoard" aria-label="Sliding picture puzzle"></div>
+      <div class="puzzle-complete" id="puzzleComplete"></div>
+    </div>
+  </div>
+`;
+document.body.appendChild(gamesModal);
+
+const gameClose = document.getElementById('gameClose');
+const openTttBtn = document.getElementById('openTttBtn');
+const openPuzzleBtn = document.getElementById('openPuzzleBtn');
+const tttGame = document.getElementById('tttGame');
+const puzzleGame = document.getElementById('puzzleGame');
+const gameModalTitle = document.getElementById('gameModalTitle');
+const gameModalEyebrow = document.getElementById('gameModalEyebrow');
+
+function openGame(type){
+  gamesModal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+
+  const isTtt = type === 'ttt';
+  tttGame.hidden = !isTtt;
+  puzzleGame.hidden = isTtt;
+  gameModalTitle.textContent = isTtt ? 'Tic Tac Toe' : 'Puzzle Game';
+  gameModalEyebrow.textContent = isTtt ? 'A Little Game' : 'Your Pictures';
+  gameClose.focus();
+
+  if(isTtt) resetTtt();
+  else renderPuzzleThumbs();
 }
-function closeLightbox(){
-  lightbox.classList.remove('show');
-  document.removeEventListener('keydown', escCloseLightbox);
-  if(lastGalleryTrigger) lastGalleryTrigger.focus();
+
+function closeGame(){
+  gamesModal.classList.remove('show');
+  document.body.style.overflow = '';
+  if(openTttBtn) openTttBtn.focus();
 }
-function escCloseLightbox(e){ if(e.key === 'Escape') closeLightbox(); }
-lightboxClose.addEventListener('click', closeLightbox);
-lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
+
+openTttBtn.addEventListener('click', () => openGame('ttt'));
+openPuzzleBtn.addEventListener('click', () => openGame('puzzle'));
+gameClose.addEventListener('click', closeGame);
+gamesModal.addEventListener('click', (e) => {
+  if(e.target === gamesModal) closeGame();
+});
+
+document.addEventListener('keydown', (e) => {
+  if(e.key === 'Escape' && gamesModal.classList.contains('show')) closeGame();
+});
+
+/* Tic Tac Toe */
+const tttBoard = document.getElementById('tttBoard');
+const tttStatus = document.getElementById('tttStatus');
+let tttState = Array(9).fill('');
+let tttGameOver = false;
+let tttThinking = false;
+
+const tttWins = [
+  [0,1,2],[3,4,5],[6,7,8],
+  [0,3,6],[1,4,7],[2,5,8],
+  [0,4,8],[2,4,6]
+];
+
+function tttWinner(board){
+  for(const line of tttWins){
+    const [a,b,c] = line;
+    if(board[a] && board[a] === board[b] && board[a] === board[c]) return board[a];
+  }
+  return board.every(Boolean) ? 'draw' : null;
+}
+
+function renderTtt(){
+  tttBoard.innerHTML = '';
+  tttState.forEach((value, i) => {
+    const cell = document.createElement('button');
+    cell.type = 'button';
+    cell.className = 'ttt-cell';
+    cell.textContent = value;
+    cell.setAttribute('aria-label', value ? `Cell ${i+1}: ${value}` : `Cell ${i+1}, empty`);
+    cell.disabled = Boolean(value) || tttGameOver || tttThinking;
+    cell.addEventListener('click', () => tttPlayerMove(i));
+    tttBoard.appendChild(cell);
+  });
+}
+
+function resetTtt(){
+  tttState = Array(9).fill('');
+  tttGameOver = false;
+  tttThinking = false;
+  tttStatus.textContent = 'Your turn — you are X.';
+  renderTtt();
+}
+
+function finishTtt(result){
+  tttGameOver = true;
+  if(result === 'X') tttStatus.textContent = 'You won. ❤';
+  else if(result === 'O') tttStatus.textContent = 'The computer won — try again.';
+  else tttStatus.textContent = 'A draw. That was close.';
+  renderTtt();
+}
+
+function tttPlayerMove(index){
+  if(tttState[index] || tttGameOver || tttThinking) return;
+  tttState[index] = 'X';
+  const result = tttWinner(tttState);
+  if(result){ finishTtt(result); return; }
+
+  tttThinking = true;
+  tttStatus.textContent = 'The computer is thinking…';
+  renderTtt();
+
+  setTimeout(() => {
+    if(tttGameOver) return;
+    const empty = tttState.map((v,i) => v ? null : i).filter(v => v !== null);
+    if(!empty.length){ finishTtt('draw'); return; }
+
+    let move = findTttMove('O');
+    if(move === null) move = findTttMove('X');
+    if(move === null && !tttState[4]) move = 4;
+    if(move === null){
+      const corners = [0,2,6,8].filter(i => !tttState[i]);
+      if(corners.length) move = corners[Math.floor(Math.random()*corners.length)];
+    }
+    if(move === null) move = empty[Math.floor(Math.random()*empty.length)];
+
+    tttState[move] = 'O';
+    tttThinking = false;
+    const next = tttWinner(tttState);
+    if(next) finishTtt(next);
+    else{
+      tttStatus.textContent = 'Your turn — you are X.';
+      renderTtt();
+    }
+  }, reducedMotion ? 50 : 420);
+}
+
+function findTttMove(mark){
+  for(let i=0;i<9;i++){
+    if(tttState[i]) continue;
+    tttState[i] = mark;
+    const wins = tttWinner(tttState) === mark;
+    tttState[i] = '';
+    if(wins) return i;
+  }
+  return null;
+}
+
+document.getElementById('tttReset').addEventListener('click', resetTtt);
+
+/* Picture upload + sliding puzzle */
+const puzzleFiles = document.getElementById('puzzleFiles');
+const puzzleThumbs = document.getElementById('puzzleThumbs');
+const puzzleBoard = document.getElementById('puzzleBoard');
+const puzzleSize = document.getElementById('puzzleSize');
+const puzzleComplete = document.getElementById('puzzleComplete');
+let puzzleImages = [];
+let puzzleSelected = 0;
+let puzzleTiles = [];
+let puzzleImageUrl = '';
+let puzzleN = 3;
+
+puzzleFiles.addEventListener('change', (e) => {
+  const files = Array.from(e.target.files || []).filter(file => file.type.startsWith('image/'));
+  if(!files.length) return;
+
+  puzzleImages.forEach(item => URL.revokeObjectURL(item.url));
+  puzzleImages = files.map(file => ({
+    name: file.name,
+    url: URL.createObjectURL(file)
+  }));
+  puzzleSelected = 0;
+  renderPuzzleThumbs();
+  buildPuzzle();
+});
+
+function renderPuzzleThumbs(){
+  puzzleThumbs.innerHTML = '';
+
+  if(!puzzleImages.length){
+    const note = document.createElement('p');
+    note.className = 'puzzle-hint';
+    note.textContent = 'No pictures selected yet — choose pictures above to begin.';
+    puzzleThumbs.appendChild(note);
+    puzzleBoard.innerHTML = '';
+    puzzleComplete.textContent = '';
+    return;
+  }
+
+  puzzleImages.forEach((item, i) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'puzzle-thumb' + (i === puzzleSelected ? ' selected' : '');
+    btn.setAttribute('aria-label', 'Use picture ' + (i+1));
+    btn.innerHTML = `<img src="${item.url}" alt="">`;
+    btn.addEventListener('click', () => {
+      puzzleSelected = i;
+      renderPuzzleThumbs();
+      buildPuzzle();
+    });
+    puzzleThumbs.appendChild(btn);
+  });
+}
+
+function buildPuzzle(){
+  if(!puzzleImages.length) return;
+
+  puzzleN = Number(puzzleSize.value);
+  puzzleImageUrl = puzzleImages[puzzleSelected].url;
+  const total = puzzleN * puzzleN;
+  puzzleTiles = Array.from({length:total}, (_,i) => i);
+
+  let empty = total - 1;
+  const moves = puzzleN === 3 ? 80 : 130;
+  let previous = -1;
+
+  for(let step=0; step<moves; step++){
+    const row = Math.floor(empty/puzzleN);
+    const col = empty % puzzleN;
+    const possible = [];
+    if(row > 0) possible.push(empty-puzzleN);
+    if(row < puzzleN-1) possible.push(empty+puzzleN);
+    if(col > 0) possible.push(empty-1);
+    if(col < puzzleN-1) possible.push(empty+1);
+
+    const filtered = possible.filter(x => x !== previous);
+    const choicePool = filtered.length ? filtered : possible;
+    const tile = choicePool[Math.floor(Math.random()*choicePool.length)];
+
+    [puzzleTiles[empty], puzzleTiles[tile]] = [puzzleTiles[tile], puzzleTiles[empty]];
+    previous = empty;
+    empty = tile;
+  }
+
+  if(isPuzzleSolved()) return buildPuzzle();
+  puzzleComplete.textContent = '';
+  renderPuzzleBoard();
+}
+
+function isPuzzleSolved(){
+  return puzzleTiles.every((tile, i) => tile === i);
+}
+
+function renderPuzzleBoard(){
+  puzzleBoard.innerHTML = '';
+  if(!puzzleImages.length) return;
+
+  puzzleBoard.style.gridTemplateColumns = `repeat(${puzzleN}, 1fr)`;
+
+  puzzleTiles.forEach((tile, position) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'puzzle-tile' + (tile === puzzleN*puzzleN-1 ? ' empty' : '');
+    btn.setAttribute('aria-label', tile === puzzleN*puzzleN-1 ? 'Empty puzzle space' : `Puzzle piece ${tile+1}`);
+
+    if(tile !== puzzleN*puzzleN-1){
+      const sourceRow = Math.floor(tile/puzzleN);
+      const sourceCol = tile % puzzleN;
+      const size = 100 / (puzzleN - 1);
+      btn.style.backgroundImage = `url("${puzzleImageUrl}")`;
+      btn.style.backgroundSize = `${puzzleN * 100}% ${puzzleN * 100}%`;
+      btn.style.backgroundPosition = `${sourceCol * size}% ${sourceRow * size}%`;
+      btn.addEventListener('click', () => movePuzzleTile(position));
+    }
+
+    puzzleBoard.appendChild(btn);
+  });
+}
+
+function movePuzzleTile(position){
+  const empty = puzzleTiles.indexOf(puzzleN*puzzleN-1);
+  const row = Math.floor(position/puzzleN);
+  const col = position % puzzleN;
+  const emptyRow = Math.floor(empty/puzzleN);
+  const emptyCol = empty % puzzleN;
+
+  if(Math.abs(row-emptyRow) + Math.abs(col-emptyCol) !== 1) return;
+
+  [puzzleTiles[position], puzzleTiles[empty]] = [puzzleTiles[empty], puzzleTiles[position]];
+  renderPuzzleBoard();
+
+  if(isPuzzleSolved()){
+    puzzleComplete.textContent = 'You did it. A little picture, put back together. ❤';
+  }
+}
+
+document.getElementById('puzzleShuffle').addEventListener('click', buildPuzzle);
+puzzleSize.addEventListener('change', buildPuzzle);
 
 /* ============================================================
    OUR SONG — play/pause mock player
