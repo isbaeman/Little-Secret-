@@ -1371,6 +1371,194 @@ footer{
 /* ============================================================
    REDUCED MOTION
    ============================================================ */
+/* ============================================================
+   DEVICE RESPONSIVENESS — preserve the existing visual design
+   ============================================================ */
+html, body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+}
+
+button, input, select, textarea{
+  max-width:100%;
+}
+
+@media (max-width:759px){
+  :root{
+    --edge-pad:clamp(16px,5vw,28px);
+    --section-pad:clamp(72px,14vw,110px);
+  }
+
+  body{
+    -webkit-text-size-adjust:100%;
+    text-size-adjust:100%;
+  }
+
+  section{
+    padding-left:var(--edge-pad);
+    padding-right:var(--edge-pad);
+  }
+
+  .hero, .hero-inner, .story-header, .love-header, .future-header, .games-header{
+    max-width:100%;
+  }
+
+  .section-heading{
+    font-size:clamp(30px,9vw,48px);
+    overflow-wrap:anywhere;
+  }
+
+  .section-sub{
+    font-size:14px;
+  }
+
+  .timeline{
+    width:100%;
+    padding-left:0;
+  }
+
+  .chapter{
+    width:100%;
+    padding-left:58px;
+    margin-bottom:42px;
+  }
+
+  .chapter-num{
+    width:46px;
+    height:46px;
+    font-size:14px;
+  }
+
+  .chapter-body{
+    padding:20px 16px;
+    gap:15px;
+  }
+
+  .chapter-title{
+    font-size:clamp(20px,6vw,27px);
+  }
+
+  .chapter-desc{
+    font-size:13.5px;
+  }
+
+  .games-grid, .love-grid{
+    grid-template-columns:1fr;
+    width:100%;
+  }
+
+  .game-card{
+    width:100%;
+    min-width:0;
+  }
+
+  .games-modal{
+    align-items:flex-start;
+    padding:10px;
+    padding-top:max(10px, env(safe-area-inset-top));
+    padding-bottom:max(10px, env(safe-area-inset-bottom));
+  }
+
+  .games-modal-inner{
+    width:100%;
+    max-width:100%;
+    max-height:calc(100dvh - 20px);
+    overflow-x:hidden;
+    border-radius:16px;
+    padding:20px 14px;
+  }
+
+  .game-modal-head{
+    gap:10px;
+  }
+
+  .game-modal-title{
+    font-size:clamp(24px,8vw,34px);
+  }
+
+  .game-close, .game-action, .puzzle-thumb, .ttt-cell{
+    -webkit-tap-highlight-color:transparent;
+    touch-action:manipulation;
+  }
+
+  .ttt-board{
+    width:min(100%, 360px);
+    gap:6px;
+  }
+
+  .ttt-cell{
+    min-width:0;
+    min-height:0;
+    border-radius:10px;
+  }
+
+  .puzzle-setup{
+    padding:14px;
+  }
+
+  .puzzle-thumbs{
+    grid-template-columns:repeat(auto-fill,minmax(62px,1fr));
+    gap:7px;
+  }
+
+  .puzzle-controls{
+    width:100%;
+    margin:16px 0;
+  }
+
+  .puzzle-select, .puzzle-controls .game-action{
+    flex:1 1 140px;
+    min-height:42px;
+  }
+
+  .puzzle-board{
+    width:min(100%, 500px);
+    gap:3px;
+    padding:3px;
+    border-radius:12px;
+  }
+
+  .song-panel{
+    width:100%;
+    max-width:100%;
+  }
+
+  img, video, iframe{
+    max-width:100%;
+  }
+}
+
+@media (max-width:420px){
+  .chapter{
+    padding-left:52px;
+  }
+
+  .chapter-num{
+    width:40px;
+    height:40px;
+  }
+
+  .chapter-body{
+    border-radius:13px;
+    padding:17px 13px;
+  }
+
+  .games-modal-inner{
+    padding:18px 11px;
+  }
+
+  .puzzle-controls{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .puzzle-select, .puzzle-controls .game-action{
+    width:100%;
+    flex:none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce){
   *, *::before, *::after{
     animation-duration:0.001ms !important;
@@ -1570,8 +1758,8 @@ footer{
         <span class="game-number">02</span>
         <span class="game-icon" aria-hidden="true">✦</span>
         <h3>Puzzle Game</h3>
-        <p>Choose photos from your gallery, pick one, and turn it into a little sliding puzzle.</p>
-        <span class="game-open">Build a puzzle <span aria-hidden="true">→</span></span>
+        <p>Play with a memory chosen specially for this website, then solve the sliding puzzle.</p>
+        <span class="game-open">Play puzzle <span aria-hidden="true">→</span></span>
       </button>
     </div>
   </section>
@@ -1709,6 +1897,13 @@ const CONFIG = {
   startDate: "2026-06-07",             // TODO: relationship start date, YYYY-MM-DD
 
   heroSubtitle: "90 days, countless memories, and somehow… you still make my heart skip a beat.",
+
+  // PUZZLE PHOTOS — only the coder chooses these. Replace these paths with your own images.
+  puzzleImages: [
+    "images/puzzle-1.jpg",
+    "images/puzzle-2.jpg",
+    "images/puzzle-3.jpg"
+  ],
 
   timeline: [
     {
@@ -1996,9 +2191,7 @@ gamesModal.innerHTML = `
     <div id="puzzleGame" hidden>
       <div class="puzzle-setup">
         <div class="puzzle-upload-row">
-          <p class="puzzle-hint">Choose one or more pictures from your gallery. Tap a thumbnail to use it for the puzzle.</p>
-          <label class="puzzle-upload-label" for="puzzleFiles">Choose pictures</label>
-          <input id="puzzleFiles" type="file" accept="image/*" multiple>
+          <p class="puzzle-hint">Pick a memory below — these pictures are selected by the creator of this website.</p>
         </div>
         <div class="puzzle-thumbs" id="puzzleThumbs"></div>
       </div>
@@ -2157,31 +2350,19 @@ function findTttMove(mark){
 
 document.getElementById('tttReset').addEventListener('click', resetTtt);
 
-/* Picture upload + sliding puzzle */
-const puzzleFiles = document.getElementById('puzzleFiles');
+/* Creator-selected pictures + sliding puzzle */
 const puzzleThumbs = document.getElementById('puzzleThumbs');
 const puzzleBoard = document.getElementById('puzzleBoard');
 const puzzleSize = document.getElementById('puzzleSize');
 const puzzleComplete = document.getElementById('puzzleComplete');
-let puzzleImages = [];
+let puzzleImages = (CONFIG.puzzleImages || []).filter(Boolean).map((url, i) => ({
+  name: `Memory ${i + 1}`,
+  url
+}));
 let puzzleSelected = 0;
 let puzzleTiles = [];
 let puzzleImageUrl = '';
 let puzzleN = 3;
-
-puzzleFiles.addEventListener('change', (e) => {
-  const files = Array.from(e.target.files || []).filter(file => file.type.startsWith('image/'));
-  if(!files.length) return;
-
-  puzzleImages.forEach(item => URL.revokeObjectURL(item.url));
-  puzzleImages = files.map(file => ({
-    name: file.name,
-    url: URL.createObjectURL(file)
-  }));
-  puzzleSelected = 0;
-  renderPuzzleThumbs();
-  buildPuzzle();
-});
 
 function renderPuzzleThumbs(){
   puzzleThumbs.innerHTML = '';
@@ -2189,7 +2370,7 @@ function renderPuzzleThumbs(){
   if(!puzzleImages.length){
     const note = document.createElement('p');
     note.className = 'puzzle-hint';
-    note.textContent = 'No pictures selected yet — choose pictures above to begin.';
+    note.textContent = 'Add your puzzle pictures in CONFIG.puzzleImages to enable this game.';
     puzzleThumbs.appendChild(note);
     puzzleBoard.innerHTML = '';
     puzzleComplete.textContent = '';
@@ -2200,8 +2381,8 @@ function renderPuzzleThumbs(){
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'puzzle-thumb' + (i === puzzleSelected ? ' selected' : '');
-    btn.setAttribute('aria-label', 'Use picture ' + (i+1));
-    btn.innerHTML = `<img src="${item.url}" alt="">`;
+    btn.setAttribute('aria-label', 'Use picture ' + (i + 1));
+    btn.innerHTML = `<img src="${item.url}" alt="Memory ${i + 1}">`;
     btn.addEventListener('click', () => {
       puzzleSelected = i;
       renderPuzzleThumbs();
